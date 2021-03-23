@@ -1,6 +1,12 @@
+import { hash } from '../../infra/hashPassword';
+import validation from '../../infra/validation';
 import makeFakeUser from '../../../__test__/fixtures/user';
-import createUser from './';
-describe('user', () => {
+import buildUserFactory from './';
+
+let createUser = buildUserFactory(validation(), hash);
+describe('Test user Entity', () => {
+  beforeEach(() => {});
+
   it('must have a name', () => {
     const user = makeFakeUser({ name: null });
     expect(() => createUser(user)).toThrow('User must have a valid name');
@@ -27,12 +33,11 @@ describe('user', () => {
 
   it('may not have a valid nationality', () => {
     const user = makeFakeUser({ nationality: null });
-    expect(() => createUser(user)).toThrow(
-      'User must have a valid nationality'
-    );
+    const userObj = createUser(user);
+    expect(userObj.getNationality()).toBe(null);
   });
 
-  it('may not have a valid nationality', () => {
+  it('may not have an invalid password', () => {
     const user = makeFakeUser({ password: '1234' });
     expect(() => createUser(user)).toThrow('User must have a strong password');
   });

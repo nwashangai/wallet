@@ -6,7 +6,7 @@ export default class User {
   }
 
   createUser({
-    id,
+    uid,
     email,
     name,
     phone,
@@ -20,7 +20,6 @@ export default class User {
     }
 
     if (!this.validator.isValidName(name)) {
-      console.log(name);
       throw new Error('User must have a valid name');
     }
 
@@ -28,16 +27,16 @@ export default class User {
       throw new Error('User must have a valid phone number');
     }
 
-    if (!nationality || !this.validator.isValidCountry(nationality)) {
+    if (nationality && !this.validator.isValidCountry(nationality)) {
       throw new Error('User must have a valid nationality');
     }
 
-    if (!password || !this.validator.isValidPassword(password)) {
+    if (password && !this.validator.isValidPassword(password)) {
       throw new Error('User must have a strong password');
     }
 
     return Object.freeze({
-      getId: () => id || null,
+      getId: () => uid || null,
       getEmail: () => email.toLowerCase(),
       getName: () => name.trim(),
       getPhone: () => phone,

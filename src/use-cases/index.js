@@ -1,5 +1,5 @@
-import Db from '../repositories';
+import buildUserCases from './User';
 
-import userCases from './User';
-
-export default { ...userCases(Db) };
+export default (dependencies) => {
+  return { ...buildUserCases(dependencies) };
+};

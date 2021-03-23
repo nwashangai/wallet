@@ -1,5 +1,7 @@
 'use strict';
 
+import { response } from 'express';
+
 export default class MainRepository {
   constructor(makeDataSource, collection) {
     this.makeDataSource = makeDataSource;
@@ -7,7 +9,7 @@ export default class MainRepository {
     this.create = this.create.bind(this);
     this.find = this.find.bind(this);
     this.findById = this.findById.bind(this);
-    this.delete = this.delete.bind(this);
+    this.remove = this.remove.bind(this);
     this.updateById = this.updateById.bind(this);
     this.updateAll = this.updateAll.bind(this);
   }
@@ -30,6 +32,20 @@ export default class MainRepository {
       id,
       ...found,
     }));
+  }
+
+  async findOne(filter = {}, projection = undefined) {
+    const dataSource = await this.makeDataSource();
+    const result = await dataSource
+      .collection(this.collection)
+      .findOne(filter, projection);
+
+    if (result) {
+      const { _id: id, ...rest } = result;
+      return { id, ...rest };
+    } else {
+      return null;
+    }
   }
 
   async findById(_id) {
@@ -61,9 +77,9 @@ export default class MainRepository {
 
   async updateAll(filter, data) {
     const dataSource = await this.makeDataSource();
-    const data = await dataSource
+    const result = await dataSource
       .collection(this.collection)
       .updateMany({ ...filter }, { $set: { ...data } });
-    return { count: data.result.nModified };
+    return { count: result.modifiedCount };
   }
 }

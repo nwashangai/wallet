@@ -10,15 +10,17 @@
     "db": "babel-node ./db/index.js",
     "dev": "nodemon --exec babel-node ./src/index.js",
     "start": "npm run clean && npm run build && cd dist && node index.js",
-    "test": "jest src --watch",
+    "test": "jest src --coverage",
+    "test:watch": "jest src --watch --coverage",
     "test:e2e": "jest ./__test__ --runInBand"
   },
   "author": "Young Nwadike",
   "jest": {
-    "verbose": false,
+    "verbose": true,
     "globalSetup": "./jest-setup.js",
     "globalTeardown": "./jest-teardown.js",
-    "testEnvironment": "./jest-mongo.js"
+    "testEnvironment": "./jest-mongo.js",
+    "collectCoverage": true
   },
   "dependencies": {
     "@devmastery/pipe": "^0.0.6",
