@@ -5,29 +5,33 @@ import buildUserFactory from './';
 
 let createUser = buildUserFactory(validation(), hash);
 describe('Test user Entity', () => {
-  beforeEach(() => {});
+  beforeEach(() => {
+    createUser = buildUserFactory(validation(), hash);
+  });
 
   it('must have a name', () => {
     const user = makeFakeUser({ name: null });
-    expect(() => createUser(user)).toThrow('User must have a valid name');
+    expect(() => createUser(user)).toThrow('{400} User must have a valid name');
   });
 
   it('must have a valid email', () => {
     const user = makeFakeUser({ email: 'young' });
-    expect(() => createUser(user)).toThrow('User must have a valid email');
+    expect(() => createUser(user)).toThrow(
+      '{400} User must have a valid email'
+    );
   });
 
   it('must have a valid phone with country code', () => {
     const user = makeFakeUser({ phone: '09023456187' });
     expect(() => createUser(user)).toThrow(
-      'User must have a valid phone number'
+      '{400} User must have a valid phone number'
     );
   });
 
   it('must have a valid nationality if provided', () => {
     const user = makeFakeUser({ nationality: 'ch' });
     expect(() => createUser(user)).toThrow(
-      'User must have a valid nationality'
+      '{400} User must have a valid nationality'
     );
   });
 
@@ -39,7 +43,9 @@ describe('Test user Entity', () => {
 
   it('may not have an invalid password', () => {
     const user = makeFakeUser({ password: '1234' });
-    expect(() => createUser(user)).toThrow('User must have a strong password');
+    expect(() => createUser(user)).toThrow(
+      '{400} User must have a strong password'
+    );
   });
 
   it('is createdAt now in UTC', () => {
@@ -48,5 +54,6 @@ describe('Test user Entity', () => {
     expect(new Date(userObj.getCreatedAt()).toUTCString().substring(26)).toBe(
       'GMT'
     );
+    expect(userObj.getPassword()).toBe('1234567');
   });
 });

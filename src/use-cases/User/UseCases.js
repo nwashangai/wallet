@@ -1,9 +1,9 @@
 import buildUserEntityFactory from '../../wallet/user';
 
 export default class User {
-  constructor({ DB, validator, makeHash }) {
-    this.DB = DB;
-    this.makeNewUser = buildUserEntityFactory(validator, makeHash);
+  constructor({ validation, passwordHash, models }) {
+    this.DB = models;
+    this.makeNewUser = buildUserEntityFactory(validation, passwordHash.hash);
     this.createNewUser = this.createNewUser.bind(this);
     this.updateUserInfo = this.updateUserInfo.bind(this);
     this.getUsers = this.getUsers.bind(this);
@@ -45,31 +45,38 @@ export default class User {
   async updateUserInfo(uid, userInfo) {
     const user = this.makeNewUser({ uid, ...userInfo, updatedAt: new Date() });
 
-    return this.DB.users.updateById(user.getId(), {
-      name: user.getName(),
-      country: user.getNationality(),
-      phone: user.getPhone(),
-      createdAt: user.getCreatedAt(),
-      updatedAt: user.getUpdatedAt(),
-    });
+    return this.DB.users.updateOne(
+      { _id: user.getId() },
+      {
+        name: user.getName(),
+        country: user.getNationality(),
+        phone: user.getPhone(),
+        createdAt: user.getCreatedAt(),
+        updatedAt: user.getUpdatedAt(),
+      }
+    );
   }
 
   async updatePassword(id, password) {
-    const userData = await this.DB.users.findById(id);
+    const userData = await this.DB.users.findOne({ _id: id });
 
     if (!userData) {
-      throw new Error('User user with Id does not exist');
+      throw new Error('User with Id does not exist');
     }
 
     const user = this.makeNewUser({
-      ...userData,
+      uid: userData._doc._id,
+      ...userData._doc,
       password,
       updatedAt: new Date(),
     });
 
-    return this.DB.users.updateById(user.getId(), {
-      password: user.hashPassword(),
-    });
+    return this.DB.users.updateOne(
+      { _id: user.getId() },
+      {
+        password: user.hashPassword(),
+      }
+    );
   }
 
   async getUsers(filter = {}, limit = undefined, start = undefined) {
@@ -82,12 +89,8 @@ export default class User {
   }
 
   async getUser(id) {
-    const user = this.DB.users.findById(id);
+    const user = this.DB.users.findOne({ _id: id });
 
-    if (!user) {
-      throw new Error('User user with Id does not exist');
-    }
-
-    return this.makeNewUser(user);
+    return !user ? null : this.makeNewUser(user._doc);
   }
 }

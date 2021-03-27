@@ -15,6 +15,7 @@ export default class UserRepository extends MainRepository {
       remove: this.remove,
       updateById: this.updateById,
       updateAll: this.updateAll,
+      findOne: this.findOne,
     };
   }
 }

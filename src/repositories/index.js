@@ -1,6 +1,10 @@
 import mongoDB from './mongoDb';
-/**import data access**/
+import makeDbFn from './mongoDb/db';
 
-export default {
-  ...mongoDB,
+export const makeDb = ({ dbDriver, config }) => makeDbFn({ dbDriver, config });
+
+export default ({ makeDb }) => {
+  return {
+    ...mongoDB({ makeDb }),
+  };
 };

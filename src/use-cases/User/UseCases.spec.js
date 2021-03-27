@@ -1,30 +1,55 @@
 import { buildFakeCollection } from '../../../__test__/fixtures/db';
 import makeFakeUser from '../../../__test__/fixtures/user';
-import buildUserCases from './';
-import { hash } from '../../infra/hashPassword';
+import buildUserCases from '.';
+import passwordHash from '../../infra/hashPassword';
 import validation from '../../infra/validation';
 
-let userCases = buildUserCases(buildFakeCollection('users'));
+let userCases = buildUserCases({
+  models: {
+    users: {
+      ...buildFakeCollection('users').users,
+      findOne: (filter = {}, projection = undefined) => {
+        return filter.email === 'johndoe@example.com'
+          ? {
+              _doc: {
+                _id: '1',
+                name: 'john',
+                phone: '123456789',
+                email: 'johndoe@example.com',
+                password: '1234567',
+              },
+            }
+          : null;
+      },
+    },
+  },
+  validation: validation(),
+  passwordHash: passwordHash(),
+});
 
 describe('Test User use cases', () => {
   beforeEach(() => {
     userCases = buildUserCases({
-      DB: {
+      models: {
         users: {
-          ...buildFakeCollection('users').users,
+          ...buildFakeCollection('users'),
           findOne: (filter = {}, projection = undefined) => {
-            return filter.email === 'johndoe@example.com'
+            return filter.email === 'johndoe@example.com' || filter._id === '10'
               ? {
-                  _id: '1',
-                  name: 'john',
-                  phone: '123456789',
+                  _doc: {
+                    _id: '10',
+                    name: 'john',
+                    phone: '+234123456789',
+                    email: 'johndoe@example.com',
+                    password: '1234567',
+                  },
                 }
               : null;
           },
         },
       },
-      validator: validation(),
-      makeHash: hash,
+      validation: validation(),
+      passwordHash: passwordHash(),
     });
   });
 
@@ -53,15 +78,15 @@ describe('Test User use cases', () => {
   });
 
   it('change user password', async () => {
-    const newUser = await userCases.updatePassword('1', '123456');
-    expect(newUser.uid).toBe('1');
+    const newUser = await userCases.updatePassword('10', '123456');
+    expect(newUser.uid).toBe('10');
     expect(newUser.password.length).toBeGreaterThan(10);
   });
 
   it('user must exist to be able to change password', async () => {
     const user = makeFakeUser({ email: 'johndoe@example.com' });
     await expect(userCases.updatePassword(null, user)).rejects.toThrow(
-      'User user with Id does not exist'
+      'User with Id does not exist'
     );
   });
 
@@ -72,8 +97,13 @@ describe('Test User use cases', () => {
   });
 
   it('get single User detail', async () => {
-    const user = await userCases.getUser('1');
-    expect(user.getEmail()).toBe('johndoe@gmail.com');
-    expect(user.getName()).toBe('john doe');
+    const user = await userCases.getUser('10');
+    expect(user.getEmail()).toBe('johndoe@example.com');
+    expect(user.getName()).toBe('john');
+  });
+
+  it('return null if no user with Id exist', async () => {
+    const user = await userCases.getUser(null);
+    expect(user).toBe(null);
   });
 });

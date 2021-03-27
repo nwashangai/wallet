@@ -16,23 +16,23 @@ export default class User {
     updatedAt = new Date(),
   }) {
     if (!this.validator.isValidEmail(email)) {
-      throw new Error('User must have a valid email');
+      throw new Error('{400} User must have a valid email');
     }
 
     if (!this.validator.isValidName(name)) {
-      throw new Error('User must have a valid name');
+      throw new Error('{400} User must have a valid name');
     }
 
     if (!this.validator.isValidPhone(phone)) {
-      throw new Error('User must have a valid phone number');
+      throw new Error('{400} User must have a valid phone number');
     }
 
     if (nationality && !this.validator.isValidCountry(nationality)) {
-      throw new Error('User must have a valid nationality');
+      throw new Error('{400} User must have a valid nationality');
     }
 
     if (password && !this.validator.isValidPassword(password)) {
-      throw new Error('User must have a strong password');
+      throw new Error('{400} User must have a strong password');
     }
 
     return Object.freeze({

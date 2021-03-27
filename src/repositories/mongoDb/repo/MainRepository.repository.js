@@ -1,9 +1,12 @@
 'use strict';
-
-import { response } from 'express';
-
 export default class MainRepository {
   constructor(makeDataSource, collection) {
+    // makeDataSource()
+    //   .then(async (res) => {
+    //     // const result = await res.collection('users').find();
+    //     console.log(await res.collection('users').find());
+    //   })
+    //   .catch((err) => console.log(err.message));
     this.makeDataSource = makeDataSource;
     this.collection = collection;
     this.create = this.create.bind(this);
@@ -12,6 +15,7 @@ export default class MainRepository {
     this.remove = this.remove.bind(this);
     this.updateById = this.updateById.bind(this);
     this.updateAll = this.updateAll.bind(this);
+    this.findOne = this.findOne.bind(this);
   }
 
   async create(data) {
@@ -36,6 +40,7 @@ export default class MainRepository {
 
   async findOne(filter = {}, projection = undefined) {
     const dataSource = await this.makeDataSource();
+    // console.log(dataSource, this.collection);
     const result = await dataSource
       .collection(this.collection)
       .findOne(filter, projection);
