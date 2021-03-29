@@ -1,6 +1,4 @@
-import morgan from 'morgan';
-
-export default (logger) => {
+export default (logger, morgan) => {
   return morgan('common', {
     stream: {
       write: (message) => {

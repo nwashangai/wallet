@@ -1,6 +1,4 @@
-const Status = require('http-status');
-
-export default (err, req, res, next, logger, config) => {
+export default (err, req, res, next, logger, config, httpStatus) => {
   logger.error(err);
 
   const response = Object.assign(
@@ -13,5 +11,5 @@ export default (err, req, res, next, logger, config) => {
     }
   );
 
-  res.status(Status.INTERNAL_SERVER_ERROR).json(response);
+  res.status(httpStatus.INTERNAL_SERVER_ERROR).json(response);
 };

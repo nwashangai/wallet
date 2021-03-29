@@ -1,13 +1,12 @@
-import mongoose from 'mongoose';
-
 export default class Datasource {
-  constructor({ config, logger }) {
+  constructor({ config, logger, mongoose }) {
     this.dbUrl = config.db.url;
     this.logger = logger;
+    this.mongoose = mongoose;
   }
   async connect() {
     try {
-      await mongoose.connect(this.dbUrl, {
+      await this.mongoose.connect(this.dbUrl, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
       });

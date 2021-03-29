@@ -1,18 +1,15 @@
-import fs from 'fs';
-import winston from 'winston';
+export default ({ config, fs, winston }) => {
+  if (!fs.existsSync(`logs`)) {
+    fs.mkdirSync(`logs`);
+  }
 
-if (!fs.existsSync(`logs`)) {
-  fs.mkdirSync(`logs`);
-}
+  winston.addColors({
+    error: 'red',
+    warn: 'yellow',
+    info: 'cyan',
+    debug: 'green',
+  });
 
-winston.addColors({
-  error: 'red',
-  warn: 'yellow',
-  info: 'cyan',
-  debug: 'green',
-});
-
-const logger = ({ config }) => {
   const writer = winston.createLogger({
     transports: [
       new winston.transports.File({ filename: 'error.log', level: 'error' }),
@@ -31,5 +28,3 @@ const logger = ({ config }) => {
 
   return writer;
 };
-
-export default logger;

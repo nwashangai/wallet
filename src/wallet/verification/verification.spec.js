@@ -1,12 +1,21 @@
+import httpStatus from 'http-status';
 import codeGenerator from '../../infra/codeGenerator';
 import validation from '../../infra/validation';
 import makeFakeRegister from '../../../__test__/fixtures/verification';
 import buildVerificationFactory from '.';
 
-let register = buildVerificationFactory(validation(), codeGenerator);
+let register = buildVerificationFactory(
+  validation(),
+  codeGenerator,
+  httpStatus
+);
 describe('Test verification Entity', () => {
   beforeEach(() => {
-    register = buildVerificationFactory(validation(), codeGenerator);
+    register = buildVerificationFactory(
+      validation(),
+      codeGenerator,
+      httpStatus
+    );
   });
 
   it('must have a valid email', () => {

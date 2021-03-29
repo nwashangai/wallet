@@ -13,6 +13,8 @@ const loadDbConfig = () => {
 
 const ENV = process.env.NODE_ENV || 'development';
 
+console.log(ENV, __dirname);
+
 const envConfig = require(path.join(__dirname, 'environments', ENV));
 const dbConfig = loadDbConfig();
 const config = {

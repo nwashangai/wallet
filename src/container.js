@@ -5,7 +5,19 @@ import {
   asFunction,
   InjectionMode,
 } from 'awilix';
-// you can do this
+import statusMonitor from 'express-status-monitor';
+import httpStatus from 'http-status';
+import framework from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import compression from 'compression';
+import ramda from 'ramda';
+import jwt from 'jsonwebtoken';
+import morgan from 'morgan';
+import mongoose from 'mongoose';
+import fs from 'fs';
+import winston from 'winston';
+import bcrypt from 'bcrypt';
 import userEntity from './wallet/user';
 import verificationEntity from './wallet/verification';
 import userCases from './use-cases/User';
@@ -17,6 +29,7 @@ import models from './repositories/mongoDb/models';
 import config from './config';
 import codeGenerator from './infra/codeGenerator';
 import EmailService from './infra/EmailService';
+import JWTService from './infra/JWTService';
 import logger from './infra/logger';
 import validation from './infra/validation';
 import errorWatch from './infra/errorWatch';
@@ -29,26 +42,38 @@ const container = createContainer({ injectionMode: InjectionMode.PROXY });
 // SYSTEM
 container.register({
   app: asFunction(app).singleton(),
-  userEntity: asClass(userEntity),
-  verificationEntity: asClass(verificationEntity),
-  userUseCases: asFunction(userCases),
-  verificationUseCases: asFunction(verificationCases),
+  userEntity: asFunction(userEntity).singleton(),
+  verificationEntity: asFunction(verificationEntity).singleton(),
+  userUseCases: asFunction(userCases).singleton(),
+  verificationUseCases: asFunction(verificationCases).singleton(),
   models: asValue(models),
   config: asValue(config),
   server: asFunction(server).singleton(),
   // dbDriver: asValue(mongodb),
   dataSource: asClass(DataSource).singleton(),
-  codeGenerator: asFunction(codeGenerator),
-  validation: asFunction(validation),
-  errorWatch: asFunction(errorWatch),
-  EmailService: asClass(EmailService).singleton(),
+  codeGenerator: asFunction(codeGenerator).singleton(),
+  validation: asFunction(validation).singleton(),
+  errorWatch: asFunction(errorWatch).singleton(),
+  emailService: asClass(EmailService).singleton(),
+  jwtService: asClass(JWTService).singleton(),
   userController: asClass(UserController).singleton(),
   passwordHash: asFunction(passwordHash),
   logger: asFunction(logger).singleton(),
   router: asFunction(router).singleton(),
-  // database: asFunction(database).singleton(),
+  jwt: asValue(jwt),
+  mongoose: asValue(mongoose),
+  fs: asValue(fs),
+  winston: asValue(winston),
+  bcrypt: asValue(bcrypt),
+  framework: asValue(framework),
+  bodyParser: asValue(bodyParser),
+  cors: asValue(cors),
+  compression: asValue(compression),
+  ramda: asValue(ramda),
+  statusMonitor: asValue(statusMonitor),
+  httpStatus: asValue(httpStatus),
+  morgan: asValue(morgan),
   // auth: asFunction(auth).singleton(),
-  // jwt: asFunction(jwt).singleton(),
   // response: asFunction(response).singleton(),
   // date: asFunction(date).singleton(),
   // repository: asFunction(repository).singleton(),

@@ -1,9 +1,10 @@
 import jest from 'jest-mock';
+import httpStatus from 'http-status';
 import { buildFakeCollection } from '../../../__test__/fixtures/db';
 import buildVerificationCases from '.';
 import validation from '../../infra/validation';
 
-let EmailService = {
+let emailService = {
   sendMail: jest.fn(),
 };
 
@@ -37,7 +38,8 @@ let verificationCases = buildVerificationCases({
   },
   validation: validation(),
   codeGenerator: () => '123456',
-  EmailService,
+  emailService,
+  httpStatus,
 });
 
 describe('Test Verification use cases', () => {
@@ -72,7 +74,8 @@ describe('Test Verification use cases', () => {
       },
       validation: validation(),
       codeGenerator: () => '123456',
-      EmailService,
+      emailService,
+      httpStatus,
     });
   });
 

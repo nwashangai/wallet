@@ -1,12 +1,13 @@
 import buildVerificationEntityFactory from '../../wallet/verification';
 
 export default class Verification {
-  constructor({ validation, codeGenerator, EmailService, models }) {
+  constructor({ validation, codeGenerator, emailService, models, httpStatus }) {
     this.DB = models;
-    this.sendMail = EmailService.sendMail;
+    this.sendMail = emailService.sendMail;
     this.verificationObject = buildVerificationEntityFactory(
       validation,
-      codeGenerator
+      codeGenerator,
+      httpStatus
     );
     this.startRegistration = this.startRegistration.bind(this);
     this.verify = this.verify.bind(this);
@@ -36,7 +37,7 @@ export default class Verification {
     });
 
     if (isRegistrationStarted) {
-      const { _id: vid, ...rest } = isRegistrationStarted._doc;
+      const { _id: vid, ...rest } = isRegistrationStarted;
       const registration = this.verificationObject({
         ...rest,
         vid,

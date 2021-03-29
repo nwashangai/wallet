@@ -1,3 +1,5 @@
+import httpStatus from 'http-status';
+import bcrypt from 'bcrypt';
 import { buildFakeCollection } from '../../../__test__/fixtures/db';
 import makeFakeUser from '../../../__test__/fixtures/user';
 import buildUserCases from '.';
@@ -11,20 +13,20 @@ let userCases = buildUserCases({
       findOne: (filter = {}, projection = undefined) => {
         return filter.email === 'johndoe@example.com'
           ? {
-              _doc: {
-                _id: '1',
-                name: 'john',
-                phone: '123456789',
-                email: 'johndoe@example.com',
-                password: '1234567',
-              },
+              _id: '1',
+              name: 'john',
+              phone: '123456789',
+              email: 'johndoe@example.com',
+              password:
+                '$2b$10$hl3iSlqcAPg.Tc8f8ggmkuvCh/LMcifsr/1mn3WqCQuLp7Lb8TXE6',
             }
           : null;
       },
     },
   },
   validation: validation(),
-  passwordHash: passwordHash(),
+  passwordHash: passwordHash({ bcrypt }),
+  httpStatus,
 });
 
 describe('Test User use cases', () => {
@@ -36,20 +38,20 @@ describe('Test User use cases', () => {
           findOne: (filter = {}, projection = undefined) => {
             return filter.email === 'johndoe@example.com' || filter._id === '10'
               ? {
-                  _doc: {
-                    _id: '10',
-                    name: 'john',
-                    phone: '+234123456789',
-                    email: 'johndoe@example.com',
-                    password: '1234567',
-                  },
+                  _id: '10',
+                  name: 'john',
+                  phone: '+234123456789',
+                  email: 'johndoe@example.com',
+                  password:
+                    '$2b$10$hl3iSlqcAPg.Tc8f8ggmkuvCh/LMcifsr/1mn3WqCQuLp7Lb8TXE6',
                 }
               : null;
           },
         },
       },
       validation: validation(),
-      passwordHash: passwordHash(),
+      passwordHash: passwordHash({ bcrypt }),
+      httpStatus,
     });
   });
 
@@ -65,7 +67,7 @@ describe('Test User use cases', () => {
   it('must not use already existing email', async () => {
     const user = makeFakeUser({ email: 'johndoe@example.com' });
     await expect(userCases.createNewUser(user)).rejects.toThrow(
-      'User email already exist'
+      '{409} User email already exist'
     );
   });
 
@@ -79,14 +81,14 @@ describe('Test User use cases', () => {
 
   it('change user password', async () => {
     const newUser = await userCases.updatePassword('10', '123456');
-    expect(newUser.uid).toBe('10');
+    expect(newUser._id).toBe('10');
     expect(newUser.password.length).toBeGreaterThan(10);
   });
 
   it('user must exist to be able to change password', async () => {
     const user = makeFakeUser({ email: 'johndoe@example.com' });
     await expect(userCases.updatePassword(null, user)).rejects.toThrow(
-      'User with Id does not exist'
+      '{404} User with Id does not exist'
     );
   });
 
@@ -105,5 +107,25 @@ describe('Test User use cases', () => {
   it('return null if no user with Id exist', async () => {
     const user = await userCases.getUser(null);
     expect(user).toBe(null);
+  });
+
+  it('must login with valid email', async () => {
+    await expect(
+      userCases.login('fakeemail@example.com', '1234')
+    ).rejects.toThrow('{404} email address does not exist');
+  });
+
+  it('must login with valid email and password combination', async () => {
+    await expect(
+      userCases.login('johndoe@example.com', '1234')
+    ).rejects.toThrow('{400} email or password is incorrect');
+  });
+
+  it('should login user', async () => {
+    const user = await userCases.login('johndoe@example.com', '123456');
+    expect(user).toHaveProperty('id');
+    expect(user).toHaveProperty('name');
+    expect(user).toHaveProperty('email');
+    expect(user).toHaveProperty('phone');
   });
 });

@@ -1,12 +1,26 @@
-import { hash } from '../../infra/hashPassword';
+import httpStatus from 'http-status';
+import bcrypt from 'bcrypt';
+import hashPassword from '../../infra/hashPassword';
 import validation from '../../infra/validation';
 import makeFakeUser from '../../../__test__/fixtures/user';
 import buildUserFactory from './';
 
-let createUser = buildUserFactory(validation(), hash);
+const { hash, isHashMatched } = hashPassword({ bcrypt });
+
+let createUser = buildUserFactory(
+  validation(),
+  hash,
+  isHashMatched,
+  httpStatus
+);
 describe('Test user Entity', () => {
   beforeEach(() => {
-    createUser = buildUserFactory(validation(), hash);
+    createUser = buildUserFactory(
+      validation(),
+      hash,
+      isHashMatched,
+      httpStatus
+    );
   });
 
   it('must have a name', () => {
@@ -46,6 +60,11 @@ describe('Test user Entity', () => {
     expect(() => createUser(user)).toThrow(
       '{400} User must have a strong password'
     );
+  });
+
+  it('may not have an invalid role', () => {
+    const user = makeFakeUser({ role: 'super' });
+    expect(() => createUser(user)).toThrow('{400} User must have a valid role');
   });
 
   it('is createdAt now in UTC', () => {

@@ -1,10 +1,17 @@
 import Verification from './UseCases';
 
-export default ({ validation, codeGenerator, EmailService, models }) => {
+export default ({
+  validation,
+  codeGenerator,
+  emailService,
+  models,
+  httpStatus,
+}) => {
   return new Verification({
     validation,
     codeGenerator,
-    EmailService,
+    emailService,
     models,
+    httpStatus,
   }).build();
 };

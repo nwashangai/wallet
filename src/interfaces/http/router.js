@@ -1,27 +1,31 @@
-import statusMonitor from 'express-status-monitor';
-import { Router } from 'express';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import compression from 'compression';
-import { partialRight } from 'ramda';
-
-import container from '../../container';
 import httpLogger from './middlewares/http-logger';
 import makeCallback from './utils/makeExpressCallback';
 import errorHandler from './middlewares/http-error-handler';
 
-export default ({ config, logger }) => {
+export default ({
+  config,
+  logger,
+  httpStatus,
+  statusMonitor,
+  framework: { Router },
+  bodyParser,
+  cors,
+  compression,
+  ramda,
+  morgan,
+  userController,
+}) => {
   const router = Router();
   const apiRouter = Router();
 
-  const UserController = container.resolve('userController');
+  // const UserController = container.resolve('userController');
 
   if (config.env === 'development') {
     router.use(statusMonitor());
   }
 
   if (config.env !== 'test') {
-    router.use(httpLogger(logger));
+    router.use(httpLogger(logger, morgan));
   }
 
   apiRouter
@@ -40,17 +44,19 @@ export default ({ config, logger }) => {
    */
   apiRouter.post(
     '/auth/register',
-    makeCallback(UserController.startRegistration)
+    makeCallback(userController.startRegistration)
   );
 
   apiRouter.post(
     '/auth/complete-registration',
-    makeCallback(UserController.completeRegistration)
+    makeCallback(userController.completeRegistration)
   );
+
+  apiRouter.post('/auth/login', makeCallback(userController.login));
 
   router.use(`/api/${config.version}`, apiRouter);
 
-  router.use(partialRight(errorHandler, [logger, config]));
+  router.use(ramda.partialRight(errorHandler, [logger, config, httpStatus]));
 
   return router;
 };

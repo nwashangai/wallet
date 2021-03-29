@@ -1,4 +1,7 @@
-import { hash, isHashMatched } from './hashPassword';
+import bcrypt from 'bcrypt';
+import hashPassword from './hashPassword';
+
+const { hash, isHashMatched } = hashPassword({ bcrypt });
 
 describe('Test hash password', () => {
   it('should hash a given password', () => {

@@ -1,7 +1,8 @@
 export default class Verify {
-  constructor({ validator, generateCode }) {
+  constructor({ validator, generateCode, httpStatus }) {
     this.validator = validator;
     this.generateCode = generateCode;
+    this.httpStatus = httpStatus;
     this.register = this.register.bind(this);
   }
 
@@ -14,8 +15,9 @@ export default class Verify {
     updatedAt = new Date(),
   }) {
     if (!this.validator.isValidEmail(email)) {
-      console.log(this.validator.isValidEmail(email), email);
-      throw new Error('{400} User must have a valid email');
+      throw new Error(
+        `{${this.httpStatus.BAD_REQUEST}} User must have a valid email`
+      );
     }
 
     const generatedCode = code || this.generateCode();

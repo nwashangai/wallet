@@ -25,6 +25,14 @@ const usersSchema = new Schema({
   password: {
     type: String,
   },
+  role: {
+    type: String,
+    default: 'REGULAR',
+  },
+  lastLogin: {
+    type: Date,
+    default: Date.now(),
+  },
   createdAt: {
     type: Date,
     required: [true, 'createdAt is required'],

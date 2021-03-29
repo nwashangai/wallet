@@ -1,9 +1,12 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import compression from 'compression';
-
-export default ({ config, router, logger }) => {
-  const app = express();
+export default ({
+  config,
+  router,
+  logger,
+  framework,
+  bodyParser,
+  compression,
+}) => {
+  const app = framework();
 
   app.disable('x-powered-by').use(bodyParser.json()).use(compression());
 
