@@ -1,6 +1,6 @@
-import User from './User';
+import User from './UseCases';
 /**import data access**/
 
-export default function buildUserCase({ DB, validator, makeHash }) {
-  return new User({ DB, validator, makeHash }).build();
-}
+export default ({ validation, passwordHash, models, httpStatus }) => {
+  return new User({ validation, passwordHash, models, httpStatus }).build();
+};

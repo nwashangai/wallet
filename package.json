@@ -17,30 +17,48 @@
   "author": "Young Nwadike",
   "jest": {
     "verbose": true,
+    "testPathIgnorePatterns": [
+      "src/config/environments/test.js",
+      "src/*.js"
+    ],
     "globalSetup": "./jest-setup.js",
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/*.js",
+      "!src/db/*.js",
+      "!src/config/environments/*.js"
+    ],
     "globalTeardown": "./jest-teardown.js",
     "testEnvironment": "./jest-mongo.js",
     "collectCoverage": true
   },
   "dependencies": {
     "@devmastery/pipe": "^0.0.6",
+    "awilix": "^4.3.3",
     "axios": "^0.18.0",
     "babel-plugin-inline-dotenv": "^1.2.2",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.18.3",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
     "cuid": "^2.1.6",
     "express": "^4.16.4",
-    "ip-regex": "^4.0.0",
-    "is-valid-email": "0.0.4",
-    "mongodb": "^3.1.13",
-    "p-reduce": "^2.0.0",
-    "sanitize-html": "^1.20.0"
+    "express-status-monitor": "^1.3.3",
+    "http-status": "^1.5.0",
+    "jest-mock": "^26.6.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "3.1.13",
+    "mongoose": "^5.12.2",
+    "morgan": "^1.10.0",
+    "ramda": "^0.27.1",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.3.4",
     "@babel/node": "^7.2.2",
     "@babel/preset-env": "^7.3.4",
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
     "babel-jest": "^24.4.0",
     "dotenv": "^6.2.0",
     "eslint": "^5.15.1",
